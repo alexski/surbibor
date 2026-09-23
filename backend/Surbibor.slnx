@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Surbibor.Api/Surbibor.Api.csproj" />
+    <Project Path="src/Surbibor.Domain/Surbibor.Domain.csproj" />
+    <Project Path="src/Surbibor.Infrastructure/Surbibor.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Surbibor.Api.Tests/Surbibor.Api.Tests.csproj" />
+  </Folder>
+</Solution>
