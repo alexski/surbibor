@@ -19,6 +19,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
                 ValidationException => HttpStatusCode.BadRequest,
                 ConflictException => HttpStatusCode.Conflict,
                 ForbiddenException => HttpStatusCode.Forbidden,
+                ServiceUnavailableException => HttpStatusCode.ServiceUnavailable,
                 _ => HttpStatusCode.InternalServerError,
             };
 

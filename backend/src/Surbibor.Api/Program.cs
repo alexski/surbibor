@@ -57,7 +57,18 @@ builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<BoardService>();
 builder.Services.AddScoped<SideBetService>();
 builder.Services.AddScoped<JwtTokenService>();
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+if (string.Equals(builder.Configuration["Email:Provider"], "Brevo", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddHttpClient<IEmailSender, BrevoEmailSender>(client =>
+    {
+        client.BaseAddress = new Uri("https://api.brevo.com/");
+        client.Timeout = TimeSpan.FromSeconds(15);
+    });
+}
+else
+{
+    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+}
 builder.Services.AddScoped<IGameNotifier, SignalRGameNotifier>();
 
 var signalRBuilder = builder.Services.AddSignalR();

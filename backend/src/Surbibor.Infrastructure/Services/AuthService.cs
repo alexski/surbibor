@@ -110,7 +110,15 @@ public class AuthService(
             throw new ValidationException("A verification email was just sent. Please wait a minute before requesting another.");
         }
 
-        await SendVerificationEmailAsync(user, ct);
+        try
+        {
+            await SendVerificationEmailAsync(user, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send verification email to user {UserId}", user.Id);
+            throw new ServiceUnavailableException("We couldn't send the email right now. Please try again later.");
+        }
     }
 
     public async Task<User> VerifyEmailAsync(string token, CancellationToken ct = default)

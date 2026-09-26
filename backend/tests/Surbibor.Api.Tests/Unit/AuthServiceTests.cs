@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Surbibor.Domain.Entities;
 using Surbibor.Domain.Exceptions;
 using Surbibor.Infrastructure;
+using Surbibor.Infrastructure.Email;
 using Surbibor.Infrastructure.Services;
 
 namespace Surbibor.Api.Tests.Unit;
@@ -101,6 +102,25 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task ResendVerification_WhenSendingFails_ThrowsServiceUnavailable()
+    {
+        var user = await _auth.RegisterAsync(Email, "alice", Password);
+        foreach (var token in _db.UserTokens)
+        {
+            token.CreatedAt = DateTimeOffset.UtcNow - AuthService.EmailResendCooldown - TimeSpan.FromSeconds(1);
+        }
+        await _db.SaveChangesAsync();
+
+        var failingAuth = new AuthService(
+            _db,
+            new FailingEmailSender(),
+            Options.Create(new FrontendOptions()),
+            NullLogger<AuthService>.Instance);
+
+        await Assert.ThrowsAsync<ServiceUnavailableException>(() => failingAuth.ResendVerificationEmailAsync(user.Id));
+    }
+
+    [Fact]
     public async Task ForgotPassword_UnknownEmail_CompletesSilentlyWithoutSending()
     {
         await _auth.RequestPasswordResetAsync("nobody@example.com");
@@ -192,4 +212,10 @@ public class AuthServiceTests
         // Validation failures happen before the token is consumed, so it still works.
         await _auth.ResetPasswordAsync(token, "BrandNewPass1", "BrandNewPass1");
     }
+}
+
+internal class FailingEmailSender : IEmailSender
+{
+    public Task SendAsync(EmailMessage message, CancellationToken ct = default) =>
+        throw new TimeoutException("SMTP unreachable");
 }

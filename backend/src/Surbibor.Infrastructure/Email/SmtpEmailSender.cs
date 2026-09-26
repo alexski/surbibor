@@ -28,7 +28,9 @@ public class SmtpEmailSender(IOptions<EmailOptions> options) : IEmailSender
             _ => SecureSocketOptions.StartTls,
         };
 
-        using var client = new SmtpClient();
+        // MailKit's default is 2 minutes; fail fast so a blocked or unreachable SMTP host
+        // doesn't leave requests hanging.
+        using var client = new SmtpClient { Timeout = (int)TimeSpan.FromSeconds(15).TotalMilliseconds };
         await client.ConnectAsync(config.SmtpHost, config.SmtpPort, security, ct);
 
         if (!string.IsNullOrEmpty(config.SmtpUsername))

@@ -4,6 +4,14 @@ public class EmailOptions
 {
     public const string SectionName = "Email";
 
+    /// <summary>
+    /// "Smtp" (default; local Mailpit or any SMTP server) or "Brevo" (HTTPS API, for hosts
+    /// like Railway that block outbound SMTP).
+    /// </summary>
+    public string Provider { get; set; } = "Smtp";
+
+    public string? BrevoApiKey { get; set; }
+
     public string SmtpHost { get; set; } = string.Empty;
     public int SmtpPort { get; set; } = 587;
     public string? SmtpUsername { get; set; }
