@@ -22,17 +22,24 @@ interface AuthState {
   token: string | null;
   user: UserResponse | null;
   login: (token: string, user: UserResponse) => void;
+  setUser: (user: UserResponse) => void;
   logout: () => void;
 }
 
 const stored = loadStored();
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   token: stored?.token ?? null,
   user: stored?.user ?? null,
   login: (token, user) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user }));
     set({ token, user });
+  },
+  setUser: (user) => {
+    const token = get().token;
+    if (!token) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user }));
+    set({ user });
   },
   logout: () => {
     localStorage.removeItem(STORAGE_KEY);

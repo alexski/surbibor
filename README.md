@@ -46,8 +46,10 @@ docker-compose.yml              Postgres + Redis for local dev
 docker compose up -d
 ```
 
-This starts Postgres on `5432` (db/user/password: `surbibor`/`surbibor`/`surbibor`) and
-Redis on `6379`, matching the backend's `appsettings.Development.json` defaults.
+This starts Postgres on `5432` (db/user/password: `surbibor`/`surbibor`/`surbibor`),
+Redis on `6379`, and [Mailpit](https://mailpit.axllent.org/) (a local SMTP catcher) on
+`1025`, matching the backend's `appsettings.Development.json` defaults. Verification and
+password-reset emails show up at `http://localhost:8025` instead of real inboxes.
 
 **No Docker available?** (e.g. WSL without the Docker Desktop integration enabled) Run
 both natively instead — on Debian/Ubuntu:
@@ -59,6 +61,9 @@ sudo -u postgres psql -c "CREATE USER surbibor WITH PASSWORD 'surbibor' CREATEDB
 sudo -u postgres psql -c "CREATE DATABASE surbibor OWNER surbibor;"
 redis-server --daemonize yes
 ```
+
+For email, grab the single-binary [Mailpit](https://mailpit.axllent.org/docs/install/)
+and run `mailpit`. It listens on the same ports.
 
 ### 2. Run the backend
 
@@ -125,7 +130,12 @@ summary here:
 3. **Confirmed events never revert.** A *pending* proposal can be rejected by the
    confirmer (back to Open); a *confirmed* event is permanent.
 4. Any game member can add events to the pool and propose/confirm/reject occurrences.
-5. Auth is JWT-only — no refresh tokens, no email verification/password reset.
+5. Auth is JWT-only, with no refresh tokens. Registration emails a verification link
+   (valid 24h). Unverified users can still log in and play, and a banner prompts them to
+   verify. **Password reset only works for verified emails**: "Forgot password" emails a
+   single-use link (valid 1h) and always responds the same way whether or not the
+   address exists, so it can't be used to discover accounts. Tokens are stored hashed,
+   and each kind of email is limited to one per user per minute.
 
 ## Known limitations (out of scope for this MVP)
 

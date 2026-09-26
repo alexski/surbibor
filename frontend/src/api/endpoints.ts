@@ -14,8 +14,12 @@ export const authApi = {
     api.post<AuthResponse>("/api/auth/register", { email, username, password }),
   login: (email: string, password: string) =>
     api.post<AuthResponse>("/api/auth/login", { email, password }),
-  resetPassword: (email: string, newPassword: string, confirmPassword: string) =>
-    api.post<AuthResponse>("/api/auth/reset-password", { email, newPassword, confirmPassword }),
+  me: () => api.get<UserResponse>("/api/auth/me"),
+  verifyEmail: (token: string) => api.post<UserResponse>("/api/auth/verify-email", { token }),
+  resendVerification: () => api.post<void>("/api/auth/resend-verification"),
+  forgotPassword: (email: string) => api.post<void>("/api/auth/forgot-password", { email }),
+  resetPassword: (token: string, newPassword: string, confirmPassword: string) =>
+    api.post<AuthResponse>("/api/auth/reset-password", { token, newPassword, confirmPassword }),
 };
 
 export const gamesApi = {

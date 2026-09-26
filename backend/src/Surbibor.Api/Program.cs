@@ -7,6 +7,7 @@ using Surbibor.Api.Hubs;
 using Surbibor.Api.Middleware;
 using Surbibor.Api.Realtime;
 using Surbibor.Infrastructure;
+using Surbibor.Infrastructure.Email;
 using Surbibor.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,8 @@ if (string.IsNullOrWhiteSpace(jwtOptions.Secret))
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 
 const string FrontendCorsPolicy = "Frontend";
+builder.Services.Configure<FrontendOptions>(builder.Configuration.GetSection(FrontendOptions.SectionName));
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(EmailOptions.SectionName));
 var frontendOrigin = builder.Configuration["Frontend:Origin"] ?? "http://localhost:5173";
 
 builder.Services.AddCors(options =>
@@ -54,6 +57,7 @@ builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<BoardService>();
 builder.Services.AddScoped<SideBetService>();
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IGameNotifier, SignalRGameNotifier>();
 
 var signalRBuilder = builder.Services.AddSignalR();

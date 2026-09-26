@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Surbibor.Domain.Logic;
 using Surbibor.Infrastructure;
+using Surbibor.Infrastructure.Email;
 using Surbibor.Infrastructure.Services;
 
 namespace Surbibor.Api.Tests.Unit;
@@ -14,6 +15,31 @@ public static class TestSupport
             .Options;
 
         return new SurbiborDbContext(options);
+    }
+}
+
+public class CapturingEmailSender : IEmailSender
+{
+    private readonly List<EmailMessage> _sent = [];
+
+    public IReadOnlyList<EmailMessage> Sent
+    {
+        get { lock (_sent) return _sent.ToList(); }
+    }
+
+    public Task SendAsync(EmailMessage message, CancellationToken ct = default)
+    {
+        lock (_sent) _sent.Add(message);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Extracts the raw token from the link in the most recent email sent to the address.</summary>
+    public string LastTokenFor(string email)
+    {
+        var message = Sent.Last(m => m.To == email);
+        var match = System.Text.RegularExpressions.Regex.Match(message.TextBody, @"[?&]token=([^\s&]+)");
+        Assert.True(match.Success, "No token link found in email body.");
+        return Uri.UnescapeDataString(match.Groups[1].Value);
     }
 }
 

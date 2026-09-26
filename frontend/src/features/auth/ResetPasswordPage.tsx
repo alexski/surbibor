@@ -1,12 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { authApi } from "../../api/endpoints";
 import { ApiError } from "../../api/client";
 import { useAuthStore } from "../../store/authStore";
 
 export function ResetPasswordPage() {
-  const [email, setEmail] = useState("");
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      const auth = await authApi.resetPassword(email, newPassword, confirmPassword);
+      const auth = await authApi.resetPassword(token!, newPassword, confirmPassword);
       login(auth.token, auth.user);
       navigate("/games");
     } catch (err) {
@@ -35,19 +36,29 @@ export function ResetPasswordPage() {
     }
   }
 
+  if (!token) {
+    return (
+      <div className="center-page">
+        <div className="card auth-card">
+          <h1>Reset password</h1>
+          <div className="error-banner">This reset link is missing its token. Request a new one below.</div>
+          <p className="muted" style={{ marginTop: 16 }}>
+            <Link to="/forgot-password">Send a new reset link</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="center-page">
       <div className="card auth-card">
         <h1>Reset password</h1>
         <p className="muted" style={{ marginTop: -8, marginBottom: 16 }}>
-          Enter your account email and a new password.
+          Choose a new password for your account.
         </p>
         <form onSubmit={handleSubmit} className="stack">
           {error && <div className="error-banner">{error}</div>}
-          <div className="field">
-            <label htmlFor="email">Email</label>
-            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
           <div className="field">
             <label htmlFor="newPassword">New password</label>
             <input
@@ -75,7 +86,7 @@ export function ResetPasswordPage() {
           </button>
         </form>
         <p className="muted" style={{ marginTop: 16 }}>
-          <Link to="/login">Back to log in</Link>
+          Link expired? <Link to="/forgot-password">Send a new one</Link>
         </p>
       </div>
     </div>

@@ -6,6 +6,7 @@ namespace Surbibor.Infrastructure;
 public class SurbiborDbContext(DbContextOptions<SurbiborDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserToken> UserTokens => Set<UserToken>();
     public DbSet<Game> Games => Set<Game>();
     public DbSet<GameMembership> GameMemberships => Set<GameMembership>();
     public DbSet<Event> Events => Set<Event>();
@@ -20,6 +21,16 @@ public class SurbiborDbContext(DbContextOptions<SurbiborDbContext> options) : Db
         {
             entity.HasIndex(u => u.Email).IsUnique();
             entity.HasIndex(u => u.Username).IsUnique();
+        });
+
+        modelBuilder.Entity<UserToken>(entity =>
+        {
+            entity.HasIndex(t => t.TokenHash).IsUnique();
+
+            entity.HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Game>(entity =>
