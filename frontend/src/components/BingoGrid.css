@@ -9,11 +9,10 @@
 
 .bingo-square {
   aspect-ratio: 1 / 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  row-gap: 2px;
   padding: 6px;
   border-radius: 8px;
   border: 1px solid #d0d5dd;
@@ -24,6 +23,11 @@
   overflow: hidden;
   cursor: default;
   color: #1d2939;
+}
+
+.bingo-square-text,
+.bingo-square-free {
+  grid-row: 2;
 }
 
 .bingo-square-text {
@@ -67,19 +71,54 @@
 }
 
 .bingo-square-badge {
-  font-size: 0.6rem;
+  grid-row: 3;
+  align-self: end;
+  max-width: 100%;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid #48c8ff;
+  background: #cdf0ff;
+  font-size: 0.55rem;
+  font-weight: 600;
+  line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: #92400e;
+  letter-spacing: 0.04em;
+  color: #12719a;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.bingo-square.is-pending .bingo-square-badge {
+  background: #ffffff;
+  border-color: #fdba74;
+  color: #ff9729;
 }
 
 .bingo-square-badge-confirmed {
-  color: #713f12;
+  border-color: #ca8a04;
+  background: #facc15;
+  color: #422006;
   font-weight: 700;
+}
+
+.bingo-square.is-clickable:hover .bingo-square-badge {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+}
+
+.bingo-square.is-clickable:hover .bingo-square-badge-confirmed {
+  background: #ca8a04;
+  border-color: #ca8a04;
 }
 
 @media (max-width: 480px) {
   .bingo-square {
     font-size: 0.6rem;
+  }
+
+  .bingo-square-badge {
+    padding: 1px 4px;
+    font-size: 0.48rem;
+    letter-spacing: 0.02em;
   }
 }
