@@ -18,6 +18,8 @@ public interface IGameNotifier
 
     Task EventRejected(Guid gameId, Guid eventId);
 
+    Task BoardCreated(Guid gameId, Guid userId);
+
     Task MarkCountUpdated(Guid gameId, Guid userId, int markedCount);
 
     Task GameWon(Guid gameId, Guid userId, WinLineType winType, int lineIndex);

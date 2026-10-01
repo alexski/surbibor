@@ -5,6 +5,7 @@ import type {
   EventItem,
   GameDetail,
   GameSummary,
+  PlayerBoardProgress,
   SideBet,
   UserResponse,
 } from "./types";
@@ -45,6 +46,7 @@ export const eventsApi = {
 
 export const boardApi = {
   get: (gameId: string) => api.get<Board>(`/api/games/${gameId}/board`),
+  others: (gameId: string) => api.get<PlayerBoardProgress[]>(`/api/games/${gameId}/board/others`),
   createRandom: (gameId: string, eventIds: string[]) =>
     api.post<Board>(`/api/games/${gameId}/board/random`, { eventIds }),
   createManual: (gameId: string, positions: { position: number; eventId: string }[]) =>

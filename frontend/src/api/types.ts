@@ -61,6 +61,13 @@ export interface BoardSquare {
   markedAt: string | null;
 }
 
+export interface PlayerBoardProgress {
+  userId: string;
+  username: string;
+  hasBoard: boolean;
+  markedPositions: number[];
+}
+
 export interface Board {
   id: string;
   gameId: string;

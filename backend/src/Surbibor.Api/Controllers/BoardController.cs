@@ -24,6 +24,16 @@ public class BoardController(BoardService boardService) : ControllerBase
         return Ok(ToResponse(board));
     }
 
+    // Other players' boards, as marked positions only (no events), for the progress panel.
+    [HttpGet("others")]
+    public async Task<ActionResult<List<PlayerBoardProgressResponse>>> GetOthers(Guid gameId, CancellationToken ct)
+    {
+        var progress = await boardService.GetOtherPlayersProgressAsync(gameId, User.GetUserId(), ct);
+        return Ok(progress
+            .Select(p => new PlayerBoardProgressResponse(p.UserId, p.Username, p.HasBoard, p.MarkedPositions))
+            .ToList());
+    }
+
     [HttpPost("random")]
     public async Task<ActionResult<BoardResponse>> CreateRandom(Guid gameId, CreateRandomBoardRequest request, CancellationToken ct)
     {

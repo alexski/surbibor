@@ -1,0 +1,78 @@
+.board-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .board-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.other-boards {
+  padding: 14px;
+}
+
+.other-boards-title {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+}
+
+.other-boards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 14px;
+}
+
+.other-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.other-board-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.other-board-count {
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.other-board-empty {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+/* Colors mirror BingoGrid.css so the mini boards read the same as the main board. */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  max-width: 120px;
+}
+
+.mini-square {
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+}
+
+.mini-square.is-marked {
+  background: #16a34a;
+  border-color: #15803d;
+}
+
+.mini-square.is-free {
+  background: #c7d2fe;
+  border-color: #a5b4fc;
+}

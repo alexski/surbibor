@@ -55,6 +55,8 @@ public class NoOpGameNotifier : IGameNotifier
 
     public Task EventRejected(Guid gameId, Guid eventId) => Task.CompletedTask;
 
+    public Task BoardCreated(Guid gameId, Guid userId) => Task.CompletedTask;
+
     public Task MarkCountUpdated(Guid gameId, Guid userId, int markedCount) => Task.CompletedTask;
 
     public Task GameWon(Guid gameId, Guid userId, WinLineType winType, int lineIndex) => Task.CompletedTask;

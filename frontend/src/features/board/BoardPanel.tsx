@@ -5,6 +5,7 @@ import { ApiError } from "../../api/client";
 import type { Board } from "../../api/types";
 import { BoardSetupPanel } from "./BoardSetupPanel";
 import { BoardView } from "./BoardView";
+import { OtherBoardsPanel } from "./OtherBoardsPanel";
 
 interface BoardPanelProps {
   gameId: string;
@@ -67,5 +68,10 @@ export function BoardPanel({ gameId, hub, gameActive }: BoardPanelProps) {
     return <BoardSetupPanel gameId={gameId} onBoardCreated={setBoard} />;
   }
 
-  return <BoardView board={board} gameActive={gameActive} onBoardUpdated={setBoard} />;
+  return (
+    <div className="board-layout">
+      <BoardView board={board} gameActive={gameActive} onBoardUpdated={setBoard} />
+      <OtherBoardsPanel gameId={gameId} hub={hub} />
+    </div>
+  );
 }

@@ -16,4 +16,6 @@ public record BoardSquareResponse(
     bool IsMarked,
     DateTimeOffset? MarkedAt);
 
+public record PlayerBoardProgressResponse(Guid UserId, string Username, bool HasBoard, IReadOnlyList<int> MarkedPositions);
+
 public record BoardResponse(Guid Id, Guid GameId, Guid UserId, DateTimeOffset CreatedAt, IReadOnlyList<BoardSquareResponse> Squares);

@@ -143,4 +143,43 @@ public class BoardServiceTests
         var anotherSquare = board.Squares.First(s => !s.IsFree && !rowPositions.Contains(s.Position));
         await Assert.ThrowsAsync<ConflictException>(() => events.ProposeAsync(gameId, anotherSquare.EventId!.Value, member));
     }
+
+    [Fact]
+    public async Task GetOtherPlayersProgress_ExcludesSelf_AndReportsPlayersWithoutBoards()
+    {
+        var (_, boards, _, _, gameId, owner, member, _) = await SetupAsync();
+
+        var progress = await boards.GetOtherPlayersProgressAsync(gameId, owner);
+
+        var other = Assert.Single(progress);
+        Assert.Equal(member, other.UserId);
+        Assert.Equal("member", other.Username);
+        Assert.False(other.HasBoard);
+        Assert.Empty(other.MarkedPositions);
+    }
+
+    [Fact]
+    public async Task GetOtherPlayersProgress_ReturnsMarkedPositions()
+    {
+        var (_, boards, events, _, gameId, owner, member, eventIds) = await SetupAsync();
+        var board = await boards.CreateRandomBoardAsync(gameId, member, eventIds);
+
+        var square = board.Squares.First(s => !s.IsFree);
+        await events.ProposeAsync(gameId, square.EventId!.Value, owner);
+        await events.ConfirmAsync(gameId, square.EventId!.Value, member);
+        await boards.MarkSquareAsync(gameId, member, square.Position);
+
+        var other = Assert.Single(await boards.GetOtherPlayersProgressAsync(gameId, owner));
+
+        Assert.True(other.HasBoard);
+        Assert.Equal(new[] { square.Position, BoardLayout.FreeSpacePosition }.Order(), other.MarkedPositions);
+    }
+
+    [Fact]
+    public async Task GetOtherPlayersProgress_RequiresMembership()
+    {
+        var (_, boards, _, _, gameId, _, _, _) = await SetupAsync();
+
+        await Assert.ThrowsAsync<ForbiddenException>(() => boards.GetOtherPlayersProgressAsync(gameId, Guid.NewGuid()));
+    }
 }

@@ -22,6 +22,9 @@ public class SignalRGameNotifier(IHubContext<GameHub> hub) : IGameNotifier
     public Task EventRejected(Guid gameId, Guid eventId) =>
         Group(gameId).SendAsync("EventRejected", new { eventId });
 
+    public Task BoardCreated(Guid gameId, Guid userId) =>
+        Group(gameId).SendAsync("BoardCreated", new { userId });
+
     public Task MarkCountUpdated(Guid gameId, Guid userId, int markedCount) =>
         Group(gameId).SendAsync("MarkCountUpdated", new { userId, markedCount });
 
